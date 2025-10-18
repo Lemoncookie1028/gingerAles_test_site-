@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GingerTube — YouTube Search & Trending</title>
+  <meta name="description" content="GingerTube — search and watch trending YouTube videos using the YouTube Data API v3." />
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--accent:#ff784f;--muted:#94a3b8;--glass: rgba(255,255,255,0.03)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;color:#e6eef8;background:linear-gradient(180deg,#071028 0%, #07111b 60%);min-height:100vh}
+    header{display:flex;align-items:center;gap:16px;padding:18px 24px;border-bottom:1px solid rgba(255,255,255,0.03);backdrop-filter:blur(6px)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#ffb397,#ff6b4a);display:flex;align-items:center;justify-content:center;font-weight:700;color:#081022}
+    h1{font-size:1.15rem;margin:0}
+    .controls{margin-left:auto;display:flex;gap:8px;align-items:center}
+    .search{padding:8px 12px;border-radius:10px;border:0;background:var(--glass);color:var(--muted);min-width:220px}
+    .btn{background:var(--accent);border:none;padding:9px 12px;border-radius:10px;color:#081022;font-weight:600;cursor:pointer}
+
+    main{padding:22px}
+    .section-title{font-size:1.2rem;font-weight:600;margin:10px 0 16px;color:#f7fafc}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.05));border-radius:12px;padding:10px;border:1px solid rgba(255,255,255,0.03);overflow:hidden}
+    .thumb{position:relative;padding-top:56.25%;background:#000;border-radius:8px;overflow:hidden}
+    .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .meta{display:flex;align-items:center;gap:10px;margin-top:10px}
+    .title{font-size:0.95rem;margin:0;color:#f7fafc}
+    .subtitle{font-size:0.85rem;color:var(--muted);margin:0}
+    .play{margin-left:auto;background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px 8px;border-radius:8px;color:var(--muted);cursor:pointer}
+
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px}
+    .modal.open{display:flex}
+    .player{width:min(1100px,96%);background:#071026;border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.04)}
+    .player-header{display:flex;align-items:center;gap:12px}
+    .player-title{font-size:1rem;color:#fff}
+    .close{margin-left:auto;background:transparent;border:0;color:var(--muted);cursor:pointer}
+    iframe{width:100%;height:560px;border-radius:8px;border:0}
+    @media(max-width:640px){iframe{height:260px}}
+
+    footer{padding:14px 22px;color:var(--muted);font-size:0.9rem;text-align:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">GT</div>
+      <div>
+        <h1>GingerTube</h1>
+        <div class="small muted">Search & watch trending YouTube videos</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <input id="globalSearch" class="search" placeholder="Search YouTube videos..." />
+      <button class="btn" id="searchBtn">Search</button>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2 class="section-title">Trending Now</h2>
+      <div class="grid" id="trendingGrid"></div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Search Results</h2>
+      <div class="grid" id="searchGrid"></div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal">
+    <div class="player" role="dialog" aria-modal="true">
+      <div class="player-header">
+        <div class="player-title" id="playerTitle">Playing</div>
+        <button class="close" id="closeModal">✕</button>
+      </div>
+      <div style="margin-top:10px">
+        <iframe id="playerFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <footer>GingerTube — powered by YouTube Data API v3 (safe key placeholder).</footer>
+
+  <script>
+    const API_KEY = "AIzaSyD88mpF5WWBySOGUplvgnGxPD3xXAcjp4I"; // replace with your key safely
+    const searchGrid = document.getElementById('searchGrid');
+    const trendingGrid = document.getElementById('trendingGrid');
+    const searchInput = document.getElementById('globalSearch');
+
+    function getThumb(id) { return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`; }
+    function escapeHTML(s){ return String(s).replace(/[&<>\"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+    function render(grid, list){
+      grid.innerHTML = '';
+      list.forEach(v => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="thumb"><img loading="lazy" src="${v.thumb || getThumb(v.id)}" alt="${escapeHTML(v.title)} thumbnail"></div>
+          <div class="meta">
+            <div>
+              <h3 class="title">${escapeHTML(v.title)}</h3>
+              <div class="subtitle muted small">${v.channel || ''}</div>
+            </div>
+            <div>
+              <button class="play" data-id="${v.id}" data-title="${escapeHTML(v.title)}">Play</button>
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      });
+      grid.querySelectorAll('.play').forEach(btn => btn.addEventListener('click', openPlayer));
+    }
+
+    function openPlayer(e) {
+      const id = e.currentTarget.dataset.id;
+      const title = e.currentTarget.dataset.title;
+      const iframe = document.getElementById('playerFrame');
+      document.getElementById('playerTitle').textContent = title;
+      iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+      document.getElementById('modal').classList.add('open');
+    }
+
+    document.getElementById('closeModal').addEventListener('click', () => {
+      const iframe = document.getElementById('playerFrame');
+      iframe.src = '';
+      document.getElementById('modal').classList.remove('open');
+    });
+
+    async function searchYouTube(query) {
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${encodeURIComponent(query)}&key=${API_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!data.items) return [];
+      return data.items.map(item => ({
+        id: item.id.videoId,
+        title: item.snippet.title,
+        thumb: item.snippet.thumbnails.high.url,
+        channel: item.snippet.channelTitle
+      }));
+    }
+
+    async function getTrending() {
+      const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&maxResults=12&regionCode=US&key=${API_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!data.items) return [];
+      return data.items.map(item => ({
+        id: item.id,
+        title: item.snippet.title,
+        thumb: item.snippet.thumbnails.high.url,
+        channel: item.snippet.channelTitle
+      }));
+    }
+
+    async function handleSearch() {
+      const q = searchInput.value.trim();
+      if (!q) return;
+      const results = await searchYouTube(q);
+      render(searchGrid, results);
+    }
+
+    document.getElementById('searchBtn').addEventListener('click', handleSearch);
+    searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleSearch(); });
+
+    // Load trending videos on page load
+    (async () => {
+      const trending = await getTrending();
+      render(trendingGrid, trending);
+    })();
+  </script>
+</body>
+</html>
