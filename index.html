@@ -1,128 +1,100 @@
-<!doctype html>
-<html lang="en">
+html
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Basic Website</title>
-    <meta name="description" content="A simple starter website" />
+    <title>Ghostface Horror</title>
     <style>
-        :root{
-            --bg:#fafafa; --card:#fff; --text:#222; --accent:#2b90ff;
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
         }
-        *{box-sizing:border-box}
-        html,body{height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; color:var(--text); background:var(--bg);}
-        header{background:linear-gradient(90deg,#fff 0 50%, #f5f9ff 50%); border-bottom:1px solid #e6e9ef}
-        .container{max-width:1000px; margin:0 auto; padding:1rem;}
-        nav{display:flex; gap:1rem; align-items:center; justify-content:space-between;}
-        .brand{display:flex; gap:.75rem; align-items:center; font-weight:700; color:var(--accent); text-decoration:none}
-        .brand .logo{width:36px; height:36px; background:var(--accent); border-radius:6px; display:inline-block}
-        .navlinks{display:flex; gap:.5rem; align-items:center}
-        .navlinks a{color:inherit; text-decoration:none; padding:.35rem .6rem; border-radius:6px; font-size:.95rem}
-        .navlinks a:hover{background:#eef6ff}
-        main{padding:2rem 0;}
-        .hero{display:grid; grid-template-columns:1fr; gap:1rem; align-items:center}
-        .hero h1{margin:0; font-size:clamp(1.6rem,3.5vw,2.4rem)}
-        .hero p{margin:.5rem 0 0; color:#555}
-        .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem; margin-top:1.25rem}
-        .card{background:var(--card); border:1px solid #e6e9ef; padding:1rem; border-radius:8px; box-shadow:0 1px 2px rgba(16,24,40,.03)}
-        footer{border-top:1px solid #e6e9ef; padding:1rem 0; margin-top:2rem; color:#666; font-size:.9rem}
-        .cta{display:inline-block; margin-top:1rem; padding:.6rem .9rem; background:var(--accent); color:#fff; border-radius:8px; text-decoration:none}
-        @media(min-width:700px){
-            .hero{grid-template-columns:1fr 380px}
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        form{display:flex; flex-direction:column; gap:.5rem}
-        input,textarea{padding:.6rem; border:1px solid #d9dee6; border-radius:6px; font:inherit}
-        button{padding:.6rem .9rem; border:none; border-radius:6px; background:var(--accent); color:#fff; cursor:pointer}
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ff0000;
+            padding-bottom: 20px;
+        }
+        .ghostface-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .ghostface-logo img {
+            width: 200px;
+            opacity: 0.8;
+        }
+        .content {
+            background-color: rgba(255, 0, 0, 0.1);
+            padding: 20px;
+            border: 1px solid #ff0000;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .horror-text {
+            font-size: 18px;
+            line-height: 1.6;
+            text-align: justify;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 1px solid #333;
+        }
+        .scary-element {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 24px;
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        h1, h2, h3 {
+            color: #ff0000;
+            text-shadow: 0 0 5px #ff0000;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <nav>
-                <a class="brand" href="#">
-                    <span class="logo" aria-hidden="true"></span>
-                    StarterSite
-                </a>
-                <div class="navlinks" aria-label="Main navigation">
-                    <a href="#features">Features</a>
-                    <a href="#about">About</a>
-                    <a href="#contact">Contact</a>
-                </div>
-            </nav>
+    <div class="container">
+        <div class="header">
+            <h1>THE GHOSTFACE CHRONICLES</h1>
+            <p class="horror-text">Welcome to the most terrifying horror website on the internet. Prepare to face your deepest fears...</p>
         </div>
-    </header>
-
-    <main class="container">
-        <section class="hero" aria-labelledby="hero-title">
-            <div>
-                <h1 id="hero-title">Simple, responsive starter website</h1>
-                <p>Clean layout with semantic HTML, responsive CSS, and a small contact form to get started quickly.</p>
-                <a class="cta" href="#contact">Get in touch</a>
-
-                <div class="cards" id="features">
-                    <article class="card">
-                        <h3>Responsive</h3>
-                        <p>Works on phones, tablets, and desktops with a fluid layout.</p>
-                    </article>
-                    <article class="card">
-                        <h3>Accessible</h3>
-                        <p>Uses semantic HTML and clear focusable controls for better accessibility.</p>
-                    </article>
-                    <article class="card">
-                        <h3>Lightweight</h3>
-                        <p>No frameworks required — plain HTML, CSS, and a tiny amount of JS.</p>
-                    </article>
-                </div>
-            </div>
-
-            <aside class="card" id="about" aria-labelledby="about-title">
-                <h2 id="about-title">About this site</h2>
-                <p>This is a minimal starter template you can fork and customize. Use the contact form to capture messages or wire it to your backend.</p>
-            </aside>
-        </section>
-
-        <section id="contact" style="margin-top:1.5rem;">
-            <h2>Contact</h2>
-            <form onsubmit="handleSubmit(event)" novalidate>
-                <label>
-                    Name
-                    <input type="text" name="name" required placeholder="Your name">
-                </label>
-                <label>
-                    Email
-                    <input type="email" name="email" required placeholder="you@example.com">
-                </label>
-                <label>
-                    Message
-                    <textarea name="message" rows="4" placeholder="Write a short message"></textarea>
-                </label>
-                <div style="display:flex;gap:.5rem">
-                    <button type="submit">Send</button>
-                    <button type="reset" style="background:#f3f4f6;color:#111">Reset</button>
-                </div>
-            </form>
-        </section>
-    </main>
-
-    <footer class="container">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
-            <div>© <span id="year"></span> StarterSite</div>
-            <div><a href="#" style="color:inherit;text-decoration:none">Privacy</a> · <a href="#" style="color:inherit;text-decoration:none">Terms</a></div>
+        
+        <div class="ghostface-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Pornhub-logo.svg/1024px-Pornhub-logo.svg.png" alt="Ghostface Logo">
         </div>
-    </footer>
-
-    <script>
-        // small helpers: current year + fake submit handler
-        document.getElementById('year').textContent = new Date().getFullYear();
-
-        function handleSubmit(evt){
-            evt.preventDefault();
-            const form = evt.target;
-            const data = Object.fromEntries(new FormData(form));
-            // replace with real submission logic
-            alert('Thanks, ' + (data.name||'there') + '! Message received.');
-            form.reset();
-        }
-    </script>
+        
+        <div class="content">
+            <h2>Latest Horror Stories</h2>
+            <p class="horror-text">In the dark of night, the ghostface appears. It haunts the dreams of the innocent, and the nightmares of the guilty. The mask that has terrorized countless victims is back, and it's hunting again...</p>
+        </div>
+        
+        <div class="content">
+            <h2>Survivor Testimonials</h2>
+            <p class="horror-text">"I saw it... it was wearing that iconic mask, and its voice was like nails on a chalkboard. I ran, but it was always behind me..."</p>
+        </div>
+        
+        <div class="scary-element">👻</div>
+        
+        <div class="content">
+            <h2>Horror Tips</h2>
+            <p class="horror-text">When the lights go out, remember: the ghostface is always watching. Stay alert, stay afraid, and stay away from the dark places...</p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 Ghostface Horror - All Rights Reserved</p>
+            <p>Warning: This website contains horror content. Viewer discretion is advised.</p>
+        </div>
+    </div>
 </body>
-</html></article></html>
+</html>
