@@ -83,7 +83,12 @@
   <footer>GingerTube — powered by YouTube Data API v3 (safe key placeholder).</footer>
 
   <script>
-    const API_KEY = "AIzaSyD88mpF5WWBySOGUplvgnGxPD3xXAcjp4I"; // replace with your key safely
+    const API_KEY = "AIzaSyD88mpF5WWBySOGUplvgnGxPD3xXAcjp4I";
+
+    // 🔒 Block system
+    const blockedWords = ["brainrots", "brainrots", "skibidi", "Skibit", "skibidi toilet", "Dandy's World"];
+    const blockedChannels = ["Brainrot Space", "jandel", "sammy", "Milo and Chip", "Mikey Maizen - Minecraft"];
+
     const searchGrid = document.getElementById('searchGrid');
     const trendingGrid = document.getElementById('trendingGrid');
     const searchInput = document.getElementById('globalSearch');
@@ -91,8 +96,23 @@
     function getThumb(id) { return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`; }
     function escapeHTML(s){ return String(s).replace(/[&<>\"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
 
+    // 🧩 Filter blocked titles/channels
+    function filterBlocked(videos) {
+      return videos.filter(v => {
+        const title = v.title.toLowerCase();
+        const channel = v.channel.toLowerCase();
+        if (blockedWords.some(word => title.includes(word.toLowerCase()))) return false;
+        if (blockedChannels.some(name => channel.includes(name.toLowerCase()))) return false;
+        return true;
+      });
+    }
+
     function render(grid, list){
       grid.innerHTML = '';
+      if (list.length === 0) {
+        grid.innerHTML = `<p style="color:#94a3b8;text-align:center;">No results found (some may be blocked)</p>`;
+        return;
+      }
       list.forEach(v => {
         const card = document.createElement('article');
         card.className = 'card';
@@ -132,12 +152,13 @@
       const res = await fetch(url);
       const data = await res.json();
       if (!data.items) return [];
-      return data.items.map(item => ({
+      const results = data.items.map(item => ({
         id: item.id.videoId,
         title: item.snippet.title,
         thumb: item.snippet.thumbnails.high.url,
         channel: item.snippet.channelTitle
       }));
+      return filterBlocked(results);
     }
 
     async function getTrending() {
@@ -145,12 +166,13 @@
       const res = await fetch(url);
       const data = await res.json();
       if (!data.items) return [];
-      return data.items.map(item => ({
+      const results = data.items.map(item => ({
         id: item.id,
         title: item.snippet.title,
         thumb: item.snippet.thumbnails.high.url,
         channel: item.snippet.channelTitle
       }));
+      return filterBlocked(results);
     }
 
     async function handleSearch() {
@@ -163,7 +185,7 @@
     document.getElementById('searchBtn').addEventListener('click', handleSearch);
     searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleSearch(); });
 
-    // Load trending videos on page load
+    // 🚀 Load trending videos on page load (filtered)
     (async () => {
       const trending = await getTrending();
       render(trendingGrid, trending);
